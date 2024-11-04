@@ -253,8 +253,12 @@ public class NetworkManager : MonoBehaviour
         }
 
         if (response.data != null && response.data.Length > 0) {
-            if (response.handlerId == 0) {
-                GameManager.instance.GameStart();
+           switch ((Packets.HandlerIds)response.handlerId) {
+                case Packets.HandlerIds.Init:
+                    {
+                        Handler.InitialHandler(Packets.ParsePayload<InitialResponse>(response.data));
+                        break;
+                }
             }
             ProcessResponseData(response.data);
         }

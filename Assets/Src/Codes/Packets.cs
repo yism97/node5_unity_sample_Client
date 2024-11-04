@@ -4,8 +4,9 @@ using System.IO;
 using System.Buffers;
 using System.Collections.Generic;
 using System;
+using System.Text;
 
-public class Packets : MonoBehaviour
+public class Packets 
 {
     public enum PacketType { Ping, Normal, Location = 3 }
     public enum HandlerIds {
@@ -27,6 +28,18 @@ public class Packets : MonoBehaviour
             Debug.LogError($"Deserialize: Failed to deserialize data. Exception: {ex}");
             throw;
         }
+    }
+    
+    private static T DeserializeJson<T>(string jsonString)
+    {
+        return JsonUtility.FromJson<T>(jsonString);
+    }
+
+    public static T ParsePayload<T>(byte[] data) {
+        string jsonString = Encoding.UTF8.GetString(data);
+
+        T response = DeserializeJson<T>(jsonString);
+        return response;
     }
 }
 
@@ -103,4 +116,10 @@ public class Response {
 
     [ProtoMember(4)]
     public byte[] data { get; set; }
+}
+
+public class InitialResponse{
+    public string userId;
+    public float x;
+    public float y;
 }
